@@ -1,0 +1,188 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fp}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}	
+\usepackage{amsmath}
+\spanishdecimal{.}
+\begin{document}
+\section{Propiedades de perfil W}
+\newcommand\dW{22.86}      % Peralte del perfil W shape
+\newcommand\bfW{21.03}     % Ancho del perfil W shape
+\newcommand\twW{1.45}      % Espesor de alma del perfil W shape
+\newcommand\tfW{2.37}      % Espesor de patín del perfil W shape
+\newcommand\fy{3515}       % Resistencia del acero
+\newcommand\Ey{2039000}    % Modulo de elasticidad del acero
+
+\subsection {Área}
+
+\begin{equation}
+	A_s=2b_f t_f+(d-2t_f)t_w
+\end{equation}
+
+\FPeval{\asW}{round(2*\bfW*\tfW+(\dW-2*\tfW)*\twW,2)}
+\begin{align*}
+	A_s=2(\bfW)(\tfW)+[\dW-2(\tfW)](\twW)=\asW \text{ cm$^2$}
+\end{align*}
+
+\subsection{Peso}
+\begin{equation}
+	W_t=A_s\gamma_s=A_s(7,850 \text{ kg/m$^3$})
+\end{equation}
+\FPeval{\pesoW}{round(\asW*7850/10000,2)}
+\begin{align*}
+	W_t=\frac{\asW(7850)}{10000}=\pesoW \text{ kg/cm}
+\end{align*}
+
+\subsection{Momentos de inercia}
+\begin{equation}
+	I_{xx}=\frac{b_fd^3-(b_f-t_w)(d-2t_f)^3}{12}
+\end{equation}
+\FPeval{\ixxW}{round((\bfW*\dW^3-(\bfW-\twW)*(\dW-2*\tfW)^3)/12,2)}
+\begin{align*}
+	I_{xx}=\frac{(\bfW)(\dW)^3-(\bfW-\twW)\left[\dW-2(\tfW)\right]^3}{12}=\ixxW \text{ cm$^4$}
+\end{align*}
+
+\begin{equation}
+	I_{yy}=\frac{2t_f b_f^3+(d-2t_f)(t_w)^3}{12}
+\end{equation}
+\FPeval{\iyyW}{round((2*\tfW*\bfW^3+(\dW-2*\tfW)*\twW^3)/12,2)}
+\begin{align*}
+	I_{yy}=\frac{(2)(\tfW)(\bfW)^3+[\dW-2(\tfW)](\twW)^3}{12}=\iyyW \text{ cm$^4$}
+\end{align*}
+
+\subsection{Módulo de sección elástico}
+
+\begin{equation}
+	S_{x}=2\frac{I_{xx}}{d}
+\end{equation}
+\FPeval{\sxW}{round(2*\ixxW/\dW,2)}
+\begin{align*}
+	S_{x}=2\frac{\ixxW}{\dW}=\sxW \text{ cm$^3$}
+\end{align*}
+
+\begin{equation}
+	S_{y}=2\frac{I_{yy}}{b_f}
+\end{equation}
+\FPeval{\syW}{round(2*\iyyW/\bfW,2)}
+\begin{align*}
+	S_{x}=2\frac{\iyyW}{\bfW}=\syW \text{ cm$^3$}
+\end{align*}
+
+\subsection{Módulo de sección plástico}
+\begin{equation}
+	Z_{x}=b_f t_f(d-t_f)+\left(\frac{d}{2}-t_f\right)^2t_w
+\end{equation}
+\FPeval{\zxW}{round(\bfW*\tfW*(\dW-\tfW)+(\dW/2-\tfW)^2*\twW,2)}
+\begin{align*}
+	Z_{x}=(\bfW)(\tfW)(\dW-\tfW)+\left(\frac{\dW}{2}-\tfW\right)^2\twW=\zxW \text{ cm$^3$}
+\end{align*}
+
+\begin{equation}
+	Z_{y}=\frac{b_f^2 t_f}{2}+(d-2t_f)\frac{t_w^2}{4} 
+\end{equation}
+\FPeval{\zyW}{round(\bfW^2*\tfW/2+(\dW-2*\tfW)*\twW^2/4,2)}
+\begin{align*}
+	Z_{y}=\frac{(\bfW)^2 (\tfW)}{2}+\left[\dW-2(\tfW)\right]\frac{(\twW)^2}{4}=\zyW \text{ cm$^3$}
+\end{align*}
+
+\subsection{Radio de giro}
+\begin{equation}
+	r_{x}=\sqrt{\frac{I_{xx}}{A_s}} 
+\end{equation}
+\FPeval{\rxW}{round((\ixxW/\asW)^0.5,2)}
+\begin{align*}
+	r_{x}=\sqrt{\frac{\ixxW}{\asW}}=\rxW \text{ cm}
+\end{align*}
+
+\begin{equation}
+	r_{y}=\sqrt{\frac{I_{yy}}{A_s}} 
+\end{equation}
+\FPeval{\ryW}{round((\iyyW/\asW)^0.5,2)}
+\begin{align*}
+	r_{y}=\sqrt{\frac{\iyyW}{\asW}}=\ryW \text{ cm}
+\end{align*}
+
+\subsection{Momento resistente}
+\subsubsection{ASD}
+\begin{equation}
+	M_{x}=0.9S_x f_y 
+\end{equation}
+\FPeval{\mxWasd}{round(0.9*\sxW*\fy/100000,2)}
+\begin{align*}
+	M_{x}=0.9 (\sxW) (\fy) \times10^{-5}=\mxWasd  \text{ ton-m}
+\end{align*}
+
+\begin{equation}
+	M{y}=0.9S_y f_y 
+\end{equation}
+\FPeval{\myWasd}{round(0.9*\syW*\fy/100000,2)}
+\begin{align*}
+	M_{y}=0.9 (\syW) (\fy) \times10^{-5}=\myWasd  \text{ ton-m}
+\end{align*}
+
+\subsubsection{LRFD}
+\begin{equation}
+	M_{x}=0.9Z_x f_y 
+\end{equation}
+\FPeval{\mxWlrfd}{round(0.9*\zxW*\fy/100000,2)}
+\begin{align*}
+	M_{x}=0.9 (\zxW) (\fy) \times10^{-5}=\mxWlrfd  \text{ ton-m}
+\end{align*}
+
+\begin{equation}
+	M_{y}=0.9Z_y f_y 
+\end{equation}
+\FPeval{\myWlrfd}{round(0.9*\zyW*\fy/100000,2)}
+\begin{align*}
+	M_{y}=0.9 (\zyW) (\fy) \times10^{-5}=\myWlrfd  \text{ ton-m}
+\end{align*}
+
+\subsubsection{Longitudes largas donde hay alabeo del patín}
+Cuando la distancia es muy larga y no esta arriostrada la viga, el patín tiende a alabearse por lo que no alcanza su máxima capacidad. Existen dos distancias que índican los limites de longitud para este comportamiento que son $L_p$ y $L_r$
+
+\begin{equation}
+	L_p=1.76r_y\sqrt{\frac{E}{f_y}} 
+\end{equation}
+\FPeval{\lpW}{round(1.76*\ryW*(\Ey/\fy)^0.5,2)}
+\begin{align*}
+	L_p=1.76(\ryW)\sqrt{\frac{\Ey}{\fy}} =\lpW \text{ cm}
+\end{align*}
+
+Para obtener $L_r$ se requiere la constante de alabeo $C_w$, la constante torsional de St. Venant  $J$ y el valor de $r_{ts}$
+
+\begin{equation}
+	C_w=\frac{t_f(d-t_f)^2b_f^3}{24} 
+\end{equation}
+\FPeval{\cwW}{round((\tfW*(\dW-\tfW)^2*\bfW^3)/24,2)}
+\begin{align*}
+	C_w=\frac{\tfW(\dW-\tfW)^2(\bfW)^3}{24}  =\cwW \text{ cm$^6$}
+\end{align*}
+
+\begin{equation}
+	r_{ts}=\sqrt{\frac{\sqrt{I_{yy}C_w}}{S_x}}
+\end{equation}
+\FPeval{\rtsW}{round(((\iyyW*\cwW)^0.5/\sxW)^0.5,2)}
+\begin{align*}
+	r_{ts}=\sqrt{\frac{\sqrt{(\iyyW)(\cwW)}}{\sxW}}= \rtsW\text{ cm}
+\end{align*}
+
+\begin{equation}
+	J=\frac{1}{3}\left[2b_ft_{f}^{3}+(d-t_f)t_w^3 \right]
+\end{equation}
+\FPeval{\jW}{round((2*\bfW*\tfW^3+(\dW-\tfW)*\twW^3)/3,2)}
+\begin{align*}
+	J=\frac{1}{3}\left[2(\bfW)(\tfW)^{3}+(\dW-\tfW)(\twW)^3 \right]= \jW\text{ cm$^4$}
+\end{align*}
+
+\begin{equation}
+	L_r=\frac{1.95r_{ts}E}{0.7Fy}\sqrt{\frac{J}{S_x(d-t_f)}+\sqrt{\frac{J}{[S_x(d-t_f)]^2}+6.76\left(\frac{0.7f_y}{E}\right)^2}}
+\end{equation}
+
+\FPeval{\lrW}{round(1.95*\rtsW*\Ey/(0.7*\fy)*(\jW/(\sxW*(\dW-\tfW))+(\jW/((\sxW*(\dW-\tfW))^2)+6.76*(0.7*\fy/\Ey)^2)^0.5)^0.5,2)}
+\begin{align*}
+	 \scriptstyle L_r=\frac{1.95(\rtsW)(\Ey)}{0.7(\fy)}\sqrt{\frac{\jW}{\sxW(\dW-\tfW)}+\sqrt{\frac{\jW}{[\sxW(\dW-\tfW)]^2}+6.76\left(\frac{0.7(\fy)}{\Ey}\right)^2}}\\
+	=\lrW\text{ cm}
+\end{align*}
+%http://akuederle.com/Automatization-with-Latex-and-Python-1
+%http://baptisteravina.com/blog/python-to-latex/
+\end{document}
