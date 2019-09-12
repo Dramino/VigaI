@@ -1,15 +1,18 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage{fp}
+\usepackage{pgfplots} %Para las gráficas
+\pgfplotsset{every tick label/.style={inner sep=0pt,font=\scriptsize},compat=1.16}
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}	
 \usepackage{amsmath}
 \spanishdecimal{.}
+
 \begin{document}
 \section{Propiedades de perfil W}
-\newcommand\dW{22.86}      % Peralte del perfil W shape
-\newcommand\bfW{21.03}     % Ancho del perfil W shape
-\newcommand\twW{1.45}      % Espesor de alma del perfil W shape
-\newcommand\tfW{2.37}      % Espesor de patín del perfil W shape
+\newcommand\dW{35.56}      % Peralte del perfil W shape
+\newcommand\bfW{36.83}     % Ancho del perfil W shape
+\newcommand\twW{1.12}      % Espesor de alma del perfil W shape
+\newcommand\tfW{1.80}      % Espesor de patín del perfil W shape
 \newcommand\fy{3515}       % Resistencia del acero
 \newcommand\Ey{2039000}    % Modulo de elasticidad del acero
 
@@ -175,14 +178,115 @@ Para obtener $L_r$ se requiere la constante de alabeo $C_w$, la constante torsio
 \end{align*}
 
 \begin{equation}
-	L_r=\frac{1.95r_{ts}E}{0.7Fy}\sqrt{\frac{J}{S_x(d-t_f)}+\sqrt{\frac{J}{[S_x(d-t_f)]^2}+6.76\left(\frac{0.7f_y}{E}\right)^2}}
+	L_r=1.95r_{ts}\frac{E}{0.7Fy}\sqrt{\frac{J}{S_x(d-t_f)}+\sqrt{ \left(\frac{J}{S_x(d-t_f)} \right) ^2+6.76\left(\frac{0.7f_y}{E}\right)^2}}
 \end{equation}
 
-\FPeval{\lrW}{round(1.95*\rtsW*\Ey/(0.7*\fy)*(\jW/(\sxW*(\dW-\tfW))+(\jW/((\sxW*(\dW-\tfW))^2)+6.76*(0.7*\fy/\Ey)^2)^0.5)^0.5,2)}
+\FPeval{\lrW}{round(1.95*\rtsW*\Ey/(0.7*\fy)*(\jW/(\sxW*(\dW-\tfW))+((\jW/((\sxW*(\dW-\tfW))))^2+6.76*(0.7*\fy/\Ey)^2)^0.5)^0.5,2)}
 \begin{align*}
-	 \scriptstyle L_r=\frac{1.95(\rtsW)(\Ey)}{0.7(\fy)}\sqrt{\frac{\jW}{\sxW(\dW-\tfW)}+\sqrt{\frac{\jW}{[\sxW(\dW-\tfW)]^2}+6.76\left(\frac{0.7(\fy)}{\Ey}\right)^2}}\\
+	 \scriptstyle L_r=1.95(\rtsW)\frac{\Ey}{0.7(\fy)}\sqrt{\frac{\jW}{\sxW(\dW-\tfW)}+\sqrt{ \left(\frac{\jW}{\sxW(\dW-\tfW)} \right) ^2+6.76\left(\frac{0.7(\fy)}{\Ey}\right)^2}}\\
 	=\lrW\text{ cm}
 \end{align*}
+
+\begin{equation}
+	F_{cr}=\frac{C_b\pi^2E}{\left(\frac{L_b}{r_{ts}}\right)^2}\sqrt{1+0.078\frac{J}{S_x(d-t_f)}\left(\frac{L_b}{r_{ts}}\right)^2}
+\end{equation}
+
+%\FPeval{\fcrW}{round(1,2)}
+\begin{align*}
+	 F_{cr}=\frac{C_b\pi^2(\Ey)}{\left(\frac{L_b}{\rtsW}\right)^2}\sqrt{1+0.078\frac{\jW}{\sxW(\dW-\tfW)}\left(\frac{L_b}{\rtsW}\right)^2}
+\end{align*}
+Simplificando
+\FPeval{\fcrWa}{round(pi^2*\Ey*\rtsW^2,2)}
+\FPeval{\fcrWb}{round(0.078*\jW/(\sxW*(\dW-\tfW)*\rtsW^2),7)}
+\FPeval{\fcrWaa}{round(\fcrWa/100000000,2)}
+\FPeval{\fcrWba}{round(\fcrWb*100000,2)}
+\begin{align*}
+	 F_{cr}=(\fcrWaa \times 10^8) \frac{C_b}{L_b^2}\sqrt{1+(\fcrWba\times 10^{-5}) L_b^2}
+\end{align*}
+
+Por lo que los momentos resistente son:
+
+\begin{enumerate}
+\item si $L_b\leq L_p$
+\begin{equation} 
+	M_p=Zf_y
+\end{equation}
+
+\item si $L_b<L_b\leq L_r$
+\begin{equation} 
+	M_n=C_b \left[ M_p-(M_p-0.7F_y S_x) \left( \frac{L_b-L_p}{L_r-L_p} \right) \right] \leq M_p
+\end{equation}
+
+\item si $L_b> L_r$
+\begin{equation}
+	M_n=F_{cr} S_x \leq M_p
+\end{equation} 
+\end{enumerate}
+
+Simplificando y aplicando un factor de resistencia de 0.9
+\FPeval{\mxW}{round(\mxWlrfd/0.9,2)}
+\FPeval{\mxWkg}{round(\mxW*100000,0)}
+\FPeval{\mnLp}{round(\mxW,0)}
+\FPeval{\mnLpa}{round((\mxWkg-0.7*\fy*\sxW)/(\lrW-\lpW),2)} %kg-cm
+\FPeval{\mnLpaa}{round((\mxWkg-0.7*\fy*\sxW)/(\lrW-\lpW)/1000,2)} %ton-m
+\FPeval{\mnLpb}{round(\mxWkg*\mnLpa*(\lpW),2)} %kg-cm
+\FPeval{\mnLpba}{round((\mxWkg+\mnLpa*\lpW)/100000,2)} %ton-m
+
+\FPeval{\fcrWab}{round((\fcrWa*\sxW)^0.5/100000,2)}
+\FPeval{\fcrWbb}{round((0.078*\jW/(\sxW*(\dW-\tfW)*\rtsW^2))*1000000,2)}
+
+\begin{enumerate}
+\item si $L_b\leq L_p$
+\begin{align*} 
+	M_p=\mxWlrfd \times 10^5 \text{kg-cm}
+\end{align*}
+
+\item si $L_b<L_b\leq L_r$
+\begin{align*} 
+	M_n=0.9C_b  (\mnLpba\times 10^{5}-\mnLpa L_b) \text { [kg-cm]} \\
+	M_n=0.9C_b  (\mnLpba-\mnLpaa L_b) \text { [ton-m]} 
+\end{align*}
+
+\item si $L_b> L_r$
+
+
+\begin{align*}
+	M_n=0.9C_b \left( \frac{\fcrWab \times 10^5}{L_b}\right)^2\sqrt{1+(\fcrWba\times 10^{-5}) L_b^2} \text{ [kg-cm]} \\
+	M_n=0.9C_b \left( \frac{\fcrWab}{L_b}\right)^2\sqrt{100+(\fcrWbb) L_b^2}               \text{ [ton-m]}
+\end{align*}
+ 
+\end{enumerate}
+
+%##########################################
+%Calculo de gráfica
+%##########################################
+\FPeval{\xlp}{\lpW/100}
+\FPeval{\xlr}{\lrW/100}
+\FPeval{\xlrf}{\xlr*2}
+
+
+
+\begin{tikzpicture}
+\begin{axis}[axis lines=left,
+		samples=200,
+		xtick={0,2,...,\xlrf+10},
+		ytick={0,5,...,\mxWlrfd+5},
+		xlabel = $L_b \text{ [m]}$,
+		ylabel = $C_bM_n \text{ [ton-m]}$,
+		grid=both,
+		title={Resistencia a flexión a diferentes longitudes $L_b$},
+		xmajorgrids=true,
+		ymajorgrids=true,
+		ymax=\mxWlrfd+5
+	]
+\addplot[blue,domain=0:\xlp] {\mxWlrfd};
+\addplot[blue,domain=\xlp:\xlr] {0.9*(\mnLpba-\mnLpaa*x)};
+\addplot[blue,domain=\xlr:\xlrf] {0.9*((\fcrWab/x)^2*(100+\fcrWbb*x^2)^0.5)};
+
+\draw[red,dashed] (axis cs:\xlp,-4) -- (axis cs:\xlp,\mxWlrfd);
+\draw[red,dashed] (axis cs:\xlr,-4) -- (axis cs:\xlr,\mxWlrfd);
+\end{axis}
+\end{tikzpicture}
 %http://akuederle.com/Automatization-with-Latex-and-Python-1
 %http://baptisteravina.com/blog/python-to-latex/
 \end{document}
