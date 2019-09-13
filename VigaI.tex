@@ -9,10 +9,10 @@
 
 \begin{document}
 \section{Propiedades de perfil W}
-\newcommand\dW{35.56}      % Peralte del perfil W shape
-\newcommand\bfW{36.83}     % Ancho del perfil W shape
-\newcommand\twW{1.12}      % Espesor de alma del perfil W shape
-\newcommand\tfW{1.80}      % Espesor de patín del perfil W shape
+\newcommand\dW{30.73}      % Peralte del perfil W shape
+\newcommand\bfW{30.48}     % Ancho del perfil W shape
+\newcommand\twW{0.99}      % Espesor de alma del perfil W shape
+\newcommand\tfW{1.54}      % Espesor de patín del perfil W shape
 \newcommand\fy{3515}       % Resistencia del acero
 \newcommand\Ey{2039000}    % Modulo de elasticidad del acero
 
@@ -287,6 +287,87 @@ Simplificando y aplicando un factor de resistencia de 0.9
 \draw[red,dashed] (axis cs:\xlr,-4) -- (axis cs:\xlr,\mxWlrfd);
 \end{axis}
 \end{tikzpicture}
+
+\subsection{Capacidad a carga axial}
+
+
+\begin{equation}
+	F_{e}=\frac{\pi^2 E}{\left(\frac{KL}{r}\right)^2}
+\end{equation}
+
+se considera las siguientes ecuaciones ante carga axial es
+
+\begin{enumerate}
+	\item Cuando $\frac{KL}{r} \leq 4.71\sqrt{\frac{E}{F_y}}$
+	
+	\begin{equation}
+		F_{cr}=\left[ 0.658^{\frac{F_y}{F_e}}  \right]f_y
+	\end{equation}
+
+	\item Cuando $\frac{KL}{r} > 4.71\sqrt{\frac{E}{F_y}}$
+
+	\begin{equation}
+		F_{cr}=0.877F_e
+	\end{equation}
+\end{enumerate}
+
+Graficando
+\FPeval{\xklrW}{4.71*(\Ey/\fy)^0.5}
+
+
+\begin{tikzpicture}
+\begin{axis}[axis lines=left,
+		samples=200,
+		xtick={0,20,...,200},
+		ytick={0,500,...,4000},
+		xlabel = $\frac{KL}{r} $,
+		ylabel = $0.85F_{cr} \text{ [kg/cm$^2$]}$,
+		grid=both,
+		title={$F_{cr}$ para cualquier perfil W},
+		xmajorgrids=true,
+		ymajorgrids=true,
+		ymax=3600
+	]
+\addplot[blue,domain=10:\xklrW] {0.85*\fy*exp((-0.000073*(x)^2))};
+\addplot[blue,domain=\xklrW:200] {17648856/x^2*0.85};
+
+\end{axis}
+\end{tikzpicture}
+
+Considerando como $r=r_y$ y $K=1$ la resistencia a compresión es
+
+\FPeval{\xklrWa}{4.71*(\Ey/\fy)^0.5*\ryW}
+\FPeval{\xklrWb}{(200*\ryW)}
+\FPeval{\pMaxW}{\fy*\asW/1000}
+
+
+\begin{tikzpicture}
+\begin{axis}[axis lines=left,
+		samples=200,
+		xtick={0,200,...,\xklrWb},
+		ytick={0,50,...,\pMaxW},
+		xlabel = $L \text{ [cm]}$,
+		ylabel = $P \text{ [Ton]}$,
+		grid=both,
+		title={Resistencia a compresion perfil W},
+		xmajorgrids=true,
+		ymajorgrids=true,
+		ymax=\pMaxW
+	]
+\addplot[blue,domain=10:\xklrWa] {0.85*\fy*exp((-0.000073*(x/\ryW)^2))*\asW/1000};
+\addplot[blue,domain=\xklrWa:\xklrWb] {17648856/(x/\ryW)^2*0.85*\asW/1000};
+
+\end{axis}
+\end{tikzpicture}
+
+%\begin{equation}
+%	F_{e}=\frac{\pi E}{\left(\frac{KL}{r}\right)^2}
+%\end{equation}
+%\FPeval{\feW}{round(pi*\Ey*(\ryW)^2/100000000,2)}
+%\begin{align*}
+%	F_{e}=\frac{\feW\times 10^8}{L^2}
+%\end{align*}
+
 %http://akuederle.com/Automatization-with-Latex-and-Python-1
 %http://baptisteravina.com/blog/python-to-latex/
 \end{document}
